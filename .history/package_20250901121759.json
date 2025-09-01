@@ -1,0 +1,40 @@
+{
+  "name": "ai-study-mentor-chatbot",
+  "version": "1.0.0",
+  "description": "AI 스터디 멘토 챗봇 - 대학생을 위한 맞춤형 학습 플랜과 스터디 그룹 매칭",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve .",
+    "dev": "npx live-server .",
+    "build": "echo 'Static site - no build required'",
+    "deploy": "echo 'Deploy to your preferred platform'"
+  },
+  "keywords": [
+    "ai",
+    "chatbot",
+    "study",
+    "mentor",
+    "education",
+    "learning",
+    "student",
+    "university",
+    "korean"
+  ],
+  "author": "AI Study Mentor Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/ai-study-mentor-chatbot.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-username/ai-study-mentor-chatbot/issues"
+  },
+  "homepage": "https://your-username.github.io/ai-study-mentor-chatbot",
+  "devDependencies": {
+    "serve": "^14.2.0",
+    "live-server": "^1.2.2"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}

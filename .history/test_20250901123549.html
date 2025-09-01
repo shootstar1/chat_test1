@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 스터디 멘토 - 테스트</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .plan-week {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .plan-task {
+            background: white;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            border: 1px solid #e1e8ed;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        
+        .chat-messages {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .message {
+            margin-bottom: 15px;
+            display: flex;
+        }
+        
+        .message.user {
+            justify-content: flex-end;
+        }
+        
+        .message-content {
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            word-wrap: break-word;
+        }
+        
+        .message.bot .message-content {
+            background: white;
+            border: 1px solid #e1e8ed;
+        }
+        
+        .message.user .message-content {
+            background: #667eea;
+            color: white;
+        }
+        
+        .chat-input {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .chat-input input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e1e8ed;
+            border-radius: 25px;
+            font-size: 16px;
+        }
+        
+        .resource-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid #f39c12;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🎓 AI 스터디 멘토</h1>
+            <p>맞춤형 학습 플랜과 스터디 그룹 매칭</p>
+        </header>
+
+        <main>
+            <!-- 온보딩 섹션 -->
+            <section id="onboarding" class="card">
+                <h2>학습 목표를 설정해주세요</h2>
+                <form id="goalForm">
+                    <div class="form-group">
+                        <label for="subject">과목명</label>
+                        <input type="text" id="subject" placeholder="예: 마케팅 원론" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="targetGrade">목표 성적</label>
+                        <select id="targetGrade" required>
+                            <option value="">선택하세요</option>
+                            <option value="A+">A+</option>
+                            <option value="A">A</option>
+                            <option value="B+">B+</option>
+                            <option value="B">B</option>
+                            <option value="C+">C+</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="currentLevel">현재 수준</label>
+                        <select id="currentLevel" required>
+                            <option value="">선택하세요</option>
+                            <option value="초급">초급 (기초 개념 학습 필요)</option>
+                            <option value="중급">중급 (개념 이해, 심화 학습 필요)</option>
+                            <option value="고급">고급 (실전 적용, 문제 풀이 필요)</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn">
+                        🔮 맞춤 플랜 생성하기
+                    </button>
+                </form>
+            </section>
+
+            <!-- 대시보드 섹션 -->
+            <section id="dashboard" class="hidden">
+                <div class="dashboard-grid">
+                    <!-- 학습 플랜 카드 -->
+                    <div class="card">
+                        <h3>📅 학습 플랜</h3>
+                        <div id="studyPlan">
+                            <div class="loading">플랜을 생성하고 있습니다...</div>
+                        </div>
+                    </div>
+
+                    <!-- 스터디 그룹 카드 -->
+                    <div class="card">
+                        <h3>👥 스터디 그룹</h3>
+                        <div>
+                            <button id="findGroupBtn" class="btn" style="margin-right: 10px;">🔍 그룹 찾기</button>
+                            <button id="createGroupBtn" class="btn">➕ 그룹 만들기</button>
+                        </div>
+                        <div id="groupInfo" class="hidden" style="margin-top: 20px; padding: 20px; background: #f8f9fa; border-radius: 8px;">
+                            <h4>매칭된 그룹</h4>
+                            <p><strong>과목:</strong> <span id="groupSubject"></span></p>
+                            <p><strong>목표:</strong> <span id="groupGoal"></span></p>
+                            <p><strong>멤버:</strong> <span id="groupMembers"></span></p>
+                            <a id="groupLink" href="#" class="btn" target="_blank" style="margin-top: 10px; display: inline-block;">📹 스터디룸 입장</a>
+                        </div>
+                    </div>
+
+                    <!-- AI 챗봇 카드 -->
+                    <div class="card">
+                        <h3>🤖 AI 멘토</h3>
+                        <div>
+                            <div id="chatMessages" class="chat-messages">
+                                <div class="message bot">
+                                    <div class="message-content">
+                                        안녕하세요! 학습 중 궁금한 점이 있으면 언제든 물어보세요. 📚
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="chat-input">
+                                <input type="text" id="chatInput" placeholder="질문을 입력하세요...">
+                                <button id="sendBtn" class="btn">📤</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 학습 자료 카드 -->
+                    <div class="card">
+                        <h3>📖 추천 자료</h3>
+                        <div id="resources">
+                            <div class="loading">자료를 준비하고 있습니다...</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // 전역 변수
+        let userData = {};
+
+        // DOM 요소들
+        const onboardingSection = document.getElementById('onboarding');
+        const dashboardSection = document.getElementById('dashboard');
+        const goalForm = document.getElementById('goalForm');
+        const studyPlanDiv = document.getElementById('studyPlan');
+        const groupInfoDiv = document.getElementById('groupInfo');
+        const chatMessages = document.getElementById('chatMessages');
+        const chatInput = document.getElementById('chatInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const findGroupBtn = document.getElementById('findGroupBtn');
+        const createGroupBtn = document.getElementById('createGroupBtn');
+        const resourcesDiv = document.getElementById('resources');
+
+        // 이벤트 리스너 등록
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('테스트 페이지 로드됨');
+            
+            if (goalForm) {
+                goalForm.addEventListener('submit', handleGoalSubmit);
+            }
+            
+            if (sendBtn && chatInput) {
+                sendBtn.addEventListener('click', handleChatSend);
+                chatInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') handleChatSend();
+                });
+            }
+            
+            if (findGroupBtn) {
+                findGroupBtn.addEventListener('click', handleFindGroup);
+            }
+            
+            if (createGroupBtn) {
+                createGroupBtn.addEventListener('click', handleCreateGroup);
+            }
+        });
+
+        // 목표 제출 처리
+        async function handleGoalSubmit(e) {
+            e.preventDefault();
+            console.log('폼 제출됨');
+            
+            const subject = document.getElementById('subject').value;
+            const targetGrade = document.getElementById('targetGrade').value;
+            const currentLevel = document.getElementById('currentLevel').value;
+            
+            if (!subject || !targetGrade || !currentLevel) {
+                alert('모든 필드를 입력해주세요.');
+                return;
+            }
+            
+            userData = { subject, targetGrade, currentLevel };
+            console.log('사용자 데이터:', userData);
+            
+            // 학습 플랜 생성
+            generateStudyPlan();
+            
+            // 학습 자료 생성
+            generateResources();
+            
+            // 대시보드로 전환
+            showDashboard();
+        }
+
+        // 학습 플랜 생성
+        function generateStudyPlan() {
+            const plan = {
+                weeks: [
+                    {
+                        week: 1,
+                        title: "기초 개념 이해",
+                        tasks: [
+                            `${userData.subject} 기본 용어 정리하기`,
+                            "교재 1-2장 읽고 요약하기",
+                            "개념 정리 노트 작성하기"
+                        ],
+                        focus: "과목의 기본 개념과 용어를 확실히 이해하기"
+                    },
+                    {
+                        week: 2,
+                        title: "핵심 이론 학습",
+                        tasks: [
+                            "주요 이론과 원리 학습하기",
+                            "예제 문제 풀이 연습하기",
+                            "이론 간 연결점 파악하기"
+                        ],
+                        focus: "핵심 이론을 체계적으로 정리하고 이해하기"
+                    },
+                    {
+                        week: 3,
+                        title: "실전 문제 연습",
+                        tasks: [
+                            "기출문제 유형 분석하기",
+                            "유사 문제 반복 풀이하기",
+                            "오답 노트 작성하기"
+                        ],
+                        focus: "문제 풀이 능력 향상과 실전 감각 기르기"
+                    },
+                    {
+                        week: 4,
+                        title: "심화 학습",
+                        tasks: [
+                            "고난도 문제 도전하기",
+                            "관련 논문이나 자료 추가 학습하기",
+                            "개인 프로젝트 또는 과제 수행하기"
+                        ],
+                        focus: "심화 지식 습득과 창의적 사고력 개발"
+                    }
+                ],
+                tips: [
+                    "매일 30분씩 꾸준히 학습하는 것이 효과적입니다.",
+                    "복습은 학습한 지 24시간 이내에 하는 것이 좋습니다.",
+                    "스터디 그룹과 함께 학습하면 동기부여가 됩니다.",
+                    "정기적으로 학습 진도를 점검하고 계획을 조정하세요."
+                ]
+            };
+            
+            displayStudyPlan(plan);
+        }
+
+        // 학습 플랜 표시
+        function displayStudyPlan(plan) {
+            let html = '<div style="margin-bottom: 20px;"><h4>📚 학습 팁</h4>';
+            plan.tips.forEach(tip => {
+                html += `<p>• ${tip}</p>`;
+            });
+            html += '</div>';
+            
+            plan.weeks.forEach(week => {
+                html += `
+                <div class="plan-week">
+                    <h4>📅 ${week.week}주차: ${week.title}</h4>
+                    <p><strong>핵심:</strong> ${week.focus}</p>
+                    <div>
+                `;
+                
+                week.tasks.forEach(task => {
+                    html += `<div class="plan-task">✓ ${task}</div>`;
+                });
+                
+                html += '</div></div>';
+            });
+            
+            studyPlanDiv.innerHTML = html;
+        }
+
+        // 학습 자료 생성
+        function generateResources() {
+            const resources = [
+                {
+                    title: "📖 교재 요약 노트",
+                    description: `${userData.subject} 핵심 개념 정리 및 요약 자료`,
+                    type: "요약"
+                },
+                {
+                    title: "🎯 시험 대비 문제집",
+                    description: "목표 성적 달성을 위한 연습 문제 모음",
+                    type: "문제"
+                },
+                {
+                    title: "📝 학습 체크리스트",
+                    description: "주차별 학습 진도 확인 체크리스트",
+                    type: "체크리스트"
+                },
+                {
+                    title: "💡 학습 전략 가이드",
+                    description: "효과적인 학습 방법과 시간 관리 팁",
+                    type: "가이드"
+                }
+            ];
+            
+            displayResources(resources);
+        }
+
+        // 학습 자료 표시
+        function displayResources(resources) {
+            let html = '';
+            resources.forEach(resource => {
+                html += `
+                <div class="resource-item">
+                    <h4>${resource.title}</h4>
+                    <p>${resource.description}</p>
+                    <small>유형: ${resource.type}</small>
+                </div>
+                `;
+            });
+            resourcesDiv.innerHTML = html;
+        }
+
+        // 스터디 그룹 찾기
+        function handleFindGroup() {
+            const groups = [
+                {
+                    subject: userData.subject,
+                    goal: `${userData.targetGrade} 목표`,
+                    members: "김민지, 박현우, 이지은 (3명)",
+                    link: "https://meet.google.com/abc-defg-hij"
+                },
+                {
+                    subject: "유사 과목",
+                    goal: "A+ 목표",
+                    members: "최준호, 정수진 (2명)",
+                    link: "https://meet.google.com/xyz-uvw-rst"
+                }
+            ];
+            
+            const matchedGroup = groups[Math.floor(Math.random() * groups.length)];
+            displayMatchedGroup(matchedGroup);
+        }
+
+        // 매칭된 그룹 표시
+        function displayMatchedGroup(group) {
+            document.getElementById('groupSubject').textContent = group.subject;
+            document.getElementById('groupGoal').textContent = group.goal;
+            document.getElementById('groupMembers').textContent = group.members;
+            document.getElementById('groupLink').href = group.link;
+            
+            groupInfoDiv.classList.remove('hidden');
+        }
+
+        // 그룹 만들기
+        function handleCreateGroup() {
+            const link = `https://meet.google.com/${generateRandomString(3)}-${generateRandomString(3)}-${generateRandomString(3)}`;
+            
+            const newGroup = {
+                subject: userData.subject,
+                goal: `${userData.targetGrade} 목표`,
+                members: "나 (1명) - 대기 중",
+                link: link
+            };
+            
+            displayMatchedGroup(newGroup);
+            alert('새 그룹이 생성되었습니다! 다른 학생들이 참여할 때까지 기다려주세요.');
+        }
+
+        // 챗봇 메시지 전송
+        function handleChatSend() {
+            const message = chatInput.value.trim();
+            if (!message) return;
+            
+            // 사용자 메시지 추가
+            addChatMessage(message, 'user');
+            chatInput.value = '';
+            
+            // AI 응답 생성
+            setTimeout(() => {
+                const responses = [
+                    "좋은 질문이네요! 그 부분에 대해 더 자세히 설명해드릴게요.",
+                    "그 질문에 대한 답변을 찾아보고 있어요. 잠시만 기다려주세요!",
+                    "흥미로운 관점이에요. 다른 각도에서도 생각해보면 어떨까요?",
+                    "그 부분이 어려우시다면, 기초부터 차근차근 설명해드릴게요.",
+                    "실제 예시를 들어가며 설명해드리면 이해하기 쉬울 거예요."
+                ];
+                
+                const response = responses[Math.floor(Math.random() * responses.length)];
+                addChatMessage(response, 'bot');
+            }, 1000);
+        }
+
+        // 챗봇 메시지 추가
+        function addChatMessage(content, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            messageDiv.innerHTML = `<div class="message-content">${content}</div>`;
+            
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // 대시보드 표시
+        function showDashboard() {
+            onboardingSection.classList.add('hidden');
+            dashboardSection.classList.remove('hidden');
+        }
+
+        // 랜덤 문자열 생성
+        function generateRandomString(length) {
+            const chars = 'abcdefghijklmnopqrstuvwxyz';
+            let result = '';
+            for (let i = 0; i < length; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return result;
+        }
+    </script>
+</body>
+</html>
